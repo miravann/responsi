@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <title>Panduan Pendakian Gunung Merbabu</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('images/merbabubg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+
+        header {
+            background-color: #6c98b6;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            border-bottom: 2px solid #ccc;
+            position: relative;
+            z-index: 1000;
+            margin-bottom: 10px;
+        }
+
+        nav {
+            background-color: #4d7084;
+            padding: 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+            color: #e0f7fa;
+            transform: scale(1.1);
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-box {
+            background-color: #e6f2f7;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s, transform 0.3s;
+            text-align: justify;
+        }
+
+        .info-box:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .info-box h2,
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #555;
+            text-align: justify;
+        }
+
+        #map-container {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #map {
+            width: 100%;
+            height: 60vh;
+        }
+
+        #legend {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            max-width: 220px;
+            z-index: 1000;
+        }
+
+        #legend h4 {
+            margin: 0 0 10px 0;
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .legend-item {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-title {
+            margin-left: 5px;
+            color: #333;
+        }
+
+        .legend-item img {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .htm-container,
+        .ekowisata-container {
+            background-color: #e6f2f7;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: justify;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .htm-container:hover,
+        .ekowisata-container:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 600px) {
+            #map {
+                height: 40vh;
+            }
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+            #content {
+                padding: 10px;
+            }
+            .info-box {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🗻 Panduan Pendakian Gunung Merbabu ✨</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="#content">Informasi</a>
+        <a href="#map-container">Peta</a>
+        <a href="#htm">HTM</a>
+        <a href="#ekowisata">Ekowisata</a>
+        <a href="booking.html">Booking</a>
+    </nav>
+
+    <div id="content">
+        <div class="info-box">
+            <h2>Informasi Pendakian Gunung Merbabu</h2>
+            <p>Gunung Merbabu, dengan ketinggian 3.145 meter di atas permukaan laut, adalah gunung stratovulkanik yang terletak di Jawa Tengah. Gunung ini dikenal dengan keindahan savana luas yang membentang di sepanjang jalur pendakian, memberikan pemandangan yang menakjubkan, terutama saat bunga edelweis bermekaran. Nama "Merbabu" berasal dari kata "meru" yang berarti gunung dan "babu" yang berarti abu, mengacu pada sejarah vulkaniknya. Gunung ini memiliki beberapa jalur pendakian yang populer, masing-masing menawarkan pengalaman unik. Selain itu, pemandangan puncaknya menyuguhkan panorama Gunung Merapi, Gunung Sumbing, Gunung Sindoro, dan Gunung Lawu yang terlihat dari kejauhan.</p>
+        </div>
+
+        <div class="info-box htm-container" id="htm">
+            <h2>Harga Tiket Masuk (HTM)</h2>
+            <p>Pengunjung perlu membayar tiket masuk yang bervariasi tergantung pada hari kunjungan dan status kewarganegaraan:</p>
+            <h3>Pendaki Lokal:</h3>
+            <ul>
+                <li>Hari Biasa: <strong>Rp65.000</strong></li>
+                <li>Hari Libur: <strong>Rp85.000</strong></li>
+            </ul>
+            <h3>Pendaki Asing:</h3>
+            <ul>
+                <li>Hari Biasa: <strong>Rp425.000</strong></li>
+                <li>Hari Libur: <strong>Rp600.000</strong></li>
+            </ul>
+            <p>Harga tersebut sudah termasuk biaya asuransi dan retribusi kawasan.</p>
+        </div>
+
+        <div class="info-box ekowisata-container" id="ekowisata">
+            <h2>Ekowisata di Sekitar Gunung Merbabu</h2>
+            <ul>
+                <li><strong>Merbabu Park:</strong> Terletak di Kopeng, Semarang, menawarkan wisata alam dengan berbagai fasilitas seperti area bermain anak, spot foto, dan taman bunga.</li>
+                <li><strong>Merbabu 360:</strong> Menyediakan pengalaman wisata dengan panorama 360 derajat. Tiket masuknya <strong>Rp10.000</strong> per orang.</li>
+                <li><strong>Desa Wisata Selo:</strong> Menawarkan pengalaman budaya dan alam, termasuk kerajinan lokal, pertanian, dan pemandangan pegunungan yang menakjubkan.</li>
+                <li><strong>Air Terjun Kedung Kayang:</strong> Menawarkan pemandangan alam yang asri dan udara sejuk, cocok untuk melepas penat.</li>
+                <li><strong>Kopeng Treetop Adventure Park:</strong> Menyediakan berbagai aktivitas outbound seperti flying fox dan jembatan tali.</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h2>Basecamp Pendakian</h2>
+            <div class="info-box">
+                <h3>Basecamp Selo</h3>
+                <p>Basecamp Selo, terletak di Kecamatan Selo, Kabupaten Boyolali, adalah jalur pendakian paling populer menuju Gunung Merbabu. Jalur ini dikenal dengan medan yang cukup terjal, tetapi menawarkan panorama savana yang luas dan menawan, terutama di Pos 3 dan Sabana 1. Basecamp Selo menyediakan fasilitas lengkap seperti tempat parkir, warung makan, toilet, dan persewaan peralatan pendakian.</p>
+            </div>
+            <div class="info-box">
+                <h3>Basecamp Thekelan</h3>
+                <p>Basecamp Thekelan terletak di Desa Kopeng, Kabupaten Semarang. Jalur ini dikenal lebih teduh karena sebagian besar melewati hutan tropis. Jalur Thekelan cocok untuk pendaki yang ingin menikmati suasana hutan yang tenang dan alami, serta keindahan matahari terbit dari pos-pos pendakian.</p>
+            </div>
+            <div class="info-box">
+                <h3>Basecamp Wekas</h3>
+                <p>Basecamp Wekas berada di Desa Wekas, Kecamatan Pakis, Kabupaten Magelang. Jalur Wekas dikenal sebagai jalur pendakian dengan rute paling pendek menuju puncak Gunung Merbabu, namun medannya cukup menantang karena lebih curam.</p>
+            </div>
+            <div class="info-box">
+                <h3>Basecamp Suwanting</h3>
+                <p>Basecamp Suwanting terletak di Desa Banyuroto, Kecamatan Sawangan, Kabupaten Magelang. Jalur ini menjadi salah satu favorit karena menyuguhkan keindahan savana yang luas dan pemandangan bunga edelweis yang memikat. Jalur ini juga dikenal dengan tanjakan yang cukup curam.</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>Jalur Pendakian Gunung Merbabu via Selo</h3>
+            <p>Jalur pendakian dari Basecamp Selo menawarkan pengalaman yang menarik bagi para pendaki. Dimulai dengan pemandangan ladang-ladang warga, jalur ini kemudian memasuki hutan yang lebat sebelum mencapai puncak. Pendaki dapat menikmati keindahan alam yang memukau di sepanjang perjalanan, khususnya sabana-nya, menjadikannya pilihan yang tepat bagi mereka yang mencari pengalaman mendaki yang menyenangkan.</p>
+        </div>
+
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="legend">
+                <h4>Legenda</h4>
+                <div class="legend-item">
+                    <img src="http://localhost:8080/geoserver/pg_web10/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=pg_web10:merbabu_line&format=image/png" alt="Jalur Merbabu">
+                    <span class="legend-title">Jalur Pendakian Merbabu</span>
+                </div>
+                <div class="legend-item">
+                    <img src="http://localhost:8080/geoserver/pg_web10/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=pg_web10:boyolali&format=image/png" alt="Boyolali">
+                    <span class="legend-title">Wilayah Boyolali</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map("map").setView([-7.4864, 110.4549], 13);
+        var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+        osm.addTo(map);
+        var merbabuLayer = L.tileLayer.wms("http://localhost:8080/geoserver/pg_web10/wms", {
+            layers: "pg_web10:merbabu_line",
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            attribution: "Data from GeoServer"
+        });
+        merbabuLayer.addTo(map);
+        var boyolaliLayer = L.tileLayer.wms("http://localhost:8080/geoserver/pg_web10/wms", {
+            layers: "pg_web10:boyolali",
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            attribution: "Data from GeoServer",
+        });
+        boyolaliLayer.addTo(map);
+        var baseMaps = {
+            "OpenStreetMap": osm
+        };
+        var overlayMaps = {
+            "Wilayah Boyolali": boyolaliLayer,
+            "Jalur Pendakian": merbabuLayer
+        };
+        var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+        function updateLegendVisibility() {
+            var legendItems = document.querySelectorAll('.legend-item');
+            legendItems.forEach(function (item) {
+                var layerName = item.querySelector('.legend-title').textContent;
+                var visible = false;
+
+                if (layerName === "Jalur Pendakian" && map.hasLayer(merbabuLayer)) visible = true;
+                if (layerName === "Wilayah Boyolali" && map.hasLayer(boyolaliLayer)) visible = true;
+
+                item.style.display = visible ? 'flex' : 'none';
+            });
+        }
+
+        map.on('overlayadd', updateLegendVisibility);
+        map.on('overlayremove', updateLegendVisibility);
+        updateLegendVisibility();
+    </script>
+</body>
+
+</html>

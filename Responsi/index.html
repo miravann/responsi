@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Java Trails</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('images/bgfix.jpg');
+            background-size: cover;
+            color: #fff;
+            transition: background 0.3s ease;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        header h1 {
+            font-size: 36px;
+            margin: 0;
+        }
+
+        header p {
+            font-size: 18px;
+        }
+
+        nav {
+            position: relative;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        nav a {
+            color: #fff;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            margin: 80px auto;
+            max-width: 1200px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+
+        .feature-section {
+            background: rgba(0, 0, 0, 0.6);
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+        }
+
+        .carousel-item {
+            flex: 0 0 auto;
+            width: 200px;
+            margin-right: 10px;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .carousel-item:hover {
+            transform: scale(1.05);
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: opacity 0.3s;
+        }
+
+        .carousel-item:hover img {
+            opacity: 0.7;
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .carousel-item:hover .tooltip {
+            opacity: 1;
+        }
+
+        .map-container {
+            height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        #weather-info {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #city-select {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: rgba(255, 255, 255, 0.8);
+            color: #000;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .tips-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .tip {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px;
+            flex: 0 0 30%; /* 3 tips in a row */
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .tip:hover {
+            transform: scale(1.05);
+        }
+
+        .tip h3 {
+            margin: 0;
+        }
+
+        .tip p {
+            display: none;
+            position: absolute;
+            bottom: 15px;
+            left: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        .tip:hover p {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Central Java Trails</h1>
+        <p>WebGIS Jalur Resmi untuk Pendaki Gunung di Jawa Tengah</p>
+    </header>
+
+    <nav>
+        <a href="#weather-info">Cuaca</a>
+        <a href="#map">Peta</a>
+        <a href="#reviews">Ulasan</a>
+        <a href="#tips">Tips & Tricks</a>
+        <a href="booking.html">Reservasi</a>
+    </nav>
+
+    <main>
+        <div class="feature-section" id="weather-info">
+            <h2>Informasi Cuaca Terkini</h2>
+            <select id="city-select" onchange="updateWeather()">
+                <option value="" disabled selected>Pilih Kota</option>
+                <option value="Semarang">Semarang</option>
+                <option value="Solo">Solo</option>
+                <option value="Yogyakarta">Yogyakarta</option>
+                <option value="Sragen">Sragen</option>
+                <option value="Kendal">Kendal</option>
+                <option value="Pekalongan">Pekalongan</option>
+                <option value="Tegal">Tegal</option>
+                <option value="Magelang">Magelang</option>
+                <option value="Kudus">Kudus</option>
+                <option value="Jepara">Jepara</option>
+                <option value="Pati">Pati</option>
+                <option value="Rembang">Rembang</option>
+                <option value="Blora">Blora</option>
+                <option value="Grobogan">Grobogan</option>
+                <option value="Demak">Demak</option>
+                <option value="Cilacap">Cilacap</option>
+                <option value="Banyumas">Banyumas</option>
+                <option value="Purwokerto">Purwokerto</option>
+                <option value="Wonosobo">Wonosobo</option>
+                <option value="Karanganyar">Karanganyar</option>
+                <option value="Boyolali">Boyolali</option>
+                <option value="Salatiga">Salatiga</option>
+            </select>
+            <div id="weather-output">
+                <p>Memuat informasi cuaca...</p>
+            </div>
+        </div>
+
+        <div class="feature-section">
+            <h2>Gunung Dengan Jalur Pendakian Resmi</h2>
+            <div class="carousel">
+                <div class="carousel-item" onclick="location.href='merbabu.html'">
+                    <img src="images/Gunung Merbabu.jpeg" alt="Gunung Merbabu">
+                    <h3>Gunung Merbabu</h3>
+                    <div class="tooltip">Kesulitan: Sedang</div>
+                </div>
+                <div class="carousel-item" onclick="location.href='sumbing.html'">
+                    <img src="images/gunung sumbing.jpg" alt="Gunung Sumbing">
+                    <h3>Gunung Sumbing</h3>
+                    <div class="tooltip">Kesulitan: Sulit</div>
+                </div>
+                <div class="carousel-item" onclick="location.href='sindoro.html'">
+                    <img src="images/sindoro.jpg" alt="Gunung Sindoro">
+                    <h3>Gunung Sindoro</h3>
+                    <div class="tooltip">Kesulitan: Sedang</div>
+                </div>
+                <div class="carousel-item" onclick="location.href='prau.html'">
+                    <img src="images/prau.jpeg" alt="Gunung Prau">
+                    <h3>Gunung Prau</h3>
+                    <div class="tooltip">Kesulitan: Mudah</div>
+                </div>
+                <div class="carousel-item" onclick="location.href='slamet.html'">
+                    <img src="images/slamet.jpg" alt="Gunung Slamet">
+                    <h3>Gunung Slamet</h3>
+                    <div class="tooltip">Kesulitan: Sulit</div>
+                </div>
+                <div class="carousel-item" onclick="location.href='kembang.html'">
+                    <img src="images/kembang.jpg" alt="Gunung kembang">
+                    <h3>Gunung kembang</h3>
+                    <div class="tooltip">Kesulitan: Mudah</div>
+                </div>
+                <div class="carousel-item" onclick="location.href='lawu.html'">
+                    <img src="images/lawu.jpeg" alt="Gunung Lawu">
+                    <h3>Gunung Lawu</h3>
+                    <div class="tooltip">Kesulitan: Sedang</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-section" id="tips">
+            <h2>Tips & Tricks Pendakian</h2>
+            <div class="tips-container">
+                <div class="tips-filters">
+                    <button class="filter-btn active" data-filter="all">Semua Tips</button>
+                    <button class="filter-btn" data-filter="persiapan">Persiapan</button>
+                    <button class="filter-btn" data-filter="keselamatan">Keselamatan</button>
+                    <button class="filter-btn" data-filter="alam">Peduli Alam</button>
+                </div>
+                <div class="tips-grid">
+                    <div class="tip-card" data-category="persiapan">
+                        <div class="tip-icon">🏋️‍♂️</div>
+                        <h3>Persiapkan Fisik</h3>
+                        <div class="tip-details">
+                            <p>Latihan fisik sebelum pendakian sangat penting. Fokus pada:</p>
+                            <ul>
+                                <li>Latihan kardio</li>
+                                <li>Penguatan otot</li>
+                                <li>Meningkatkan stamina</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tip-card" data-category="persiapan">
+                        <div class="tip-icon">🗓️</div>
+                        <h3>Pilih Waktu yang Tepat</h3>
+                        <div class="tip-details">
+                            <p>Pertimbangkan cuaca dan musim:</p>
+                            <ul>
+                                <li>Hindari musim hujan</li>
+                                <li>Pilih April-Oktober</li>
+                                <li>Periksa ramalan cuaca</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tip-card" data-category="keselamatan">
+                        <div class="tip-icon">👥</div>
+                        <h3>Jangan Sendirian</h3>
+                        <div class="tip-details">
+                            <p>Keselamatan dalam kelompok:</p>
+                            <ul>
+                                <li>Minimal 3-4 orang</li>
+                                <li>Berbagi beban dan tanggung jawab</li>
+                                <li>Saling mendukung</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tip-card" data-category="persiapan">
+                        <div class="tip-icon">🎒</div>
+                        <h3>Perlengkapan yang Tepat</h3>
+                        <div class="tip-details">
+                            <p>Persiapan barang yang wajib:</p>
+                            <ul>
+                                <li>Sepatu hiking berkualitas</li>
+                                <li>Jaket anti air</li>
+                                <li>Tas dengan kapasitas cukup</li>
+                                <li>Peralatan P3K</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tip-card" data-category="keselamatan">
+                        <div class="tip-icon">📱</div>
+                        <h3>Komunikasi Darurat</h3>
+                        <div class="tip-details">
+                            <p>Persiapan komunikasi:</p>
+                            <ul>
+                                <li>Ponsel dengan baterai cadangan</li>
+                                <li>Power bank</li>
+                                <li>Nomor darurat</li>
+                                <li>Radio komunikasi</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tip-card" data-category="alam">
+                        <div class="tip-icon">♻️</div>
+                        <h3>Jaga Kebersihan Alam</h3>
+                        <div class="tip-details">
+                            <p>Prinsip pendakian ramah lingkungan:</p>
+                            <ul>
+                                <li>Bawa pulang sampah</li>
+                                <li>Tidak merusak vegetasi</li>
+                                <li>Hindari membakar api sembarangan</li>
+                                <li>Hormati habitat satwa</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Tips Tambahan -->
+                    <div class="tip-card" data-category="persiapan">
+                        <div class="tip-icon">💧</div>
+                        <h3>Hidrasi yang Cukup</h3>
+                        <div class="tip-details">
+                            <p>Pentingnya menjaga hidrasi selama pendakian:</p>
+                            <ul>
+                                <li>Minum air secara teratur</li>
+                                <li>Bawa cukup air atau alat penyaring air</li>
+                                <li>Hindari dehidrasi dengan memantau warna urine</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tip-card" data-category="keselamatan">
+                        <div class="tip-icon">🧭</div>
+                        <h3>Gunakan Peta dan Kompas</h3>
+                        <div class="tip-details">
+                            <p>Pentingnya navigasi selama pendakian:</p>
+                            <ul>
+                                <li>Pelajari cara menggunakan peta dan kompas</li>
+                                <li>Selalu bawa peta jalur pendakian</li>
+                                <li>Ketahui titik-titik penting di rute</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .tips-container {
+                background: rgba(0, 0, 0, 0.7);
+                border-radius: 15px;
+                padding: 20px;
+                overflow: hidden; /* Menangani overflow */
+            }
+        
+            .tips-filters {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+        
+            .filter-btn {
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                margin: 0 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+        
+            .filter-btn.active,
+            .filter-btn:hover {
+                background: #28a745;
+                color: white;
+            }
+        
+            .tips-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsif */
+                gap: 20px;
+            }
+        
+            .tip-card {
+                background: rgba(0, 0, 0, 0.8);
+                border-radius: 10px;
+                padding: 20px;
+                text-align: center;
+                transition: transform 0.3s ease;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+            }
+        
+            .tip-card:hover {
+                transform: scale(1.05);
+            }
+        
+            .tip-icon {
+                font-size: 3rem;
+                margin-bottom: 15px;
+            }
+        
+            .tip-details {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 20px;
+                overflow-y: auto;
+                z-index: 10;
+            }
+        
+            .tip-card:hover .tip-details {
+                display: block;
+            }
+        
+            .tip-details ul {
+                text-align: left;
+                padding-left: 20px;
+            }
+
+            #reviews-container {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                max-width: 500px;
+                margin: auto;
+            }
+        
+            #review-input {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                resize: none;
+                font-family: inherit;
+            }
+        
+            #submit-review-btn {
+                width: 100%;
+                padding: 10px;
+                background-color: #6c98b6;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+        
+            #submit-review-btn:hover {
+                background-color: #5a8ca2;
+            }
+        
+            #review-list {
+                margin-top: 20px;
+                max-width: 250px;
+                margin: auto;
+            }
+        
+            .review-item {
+                background-color: #111212;
+                border-radius: 5px;
+                padding: 10px;
+                margin-bottom: 10px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+        
+        <script>
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const filter = btn.getAttribute('data-filter');
+                    const tipCards = document.querySelectorAll('.tip-card');
+                    
+                    tipCards.forEach(card => {
+                        if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        </script>
+
+        <div class="feature-section">
+            <h2>Peta Jalur Pendakian</h2>
+            <div id="map" class="map-container"></div>
+        </div>
+
+        <div class="feature-section" id="reviews">
+            <h2>Ulasan Pendaki</h2>
+            <div id="reviews-container">
+                <textarea id="review-input" placeholder="Tulis ulasan Anda..." rows="4"></textarea><br>
+                <button id="submit-review-btn">Kirim Ulasan</button>
+            </div>
+            <div id="review-list"></div>
+        </div>
+        
+        <script>
+            document.getElementById('submit-review-btn').addEventListener('click', submitReview);
+        
+            function submitReview() {
+                const reviewInput = document.getElementById('review-input');
+                const reviewText = reviewInput.value.trim();
+        
+                if (reviewText) {
+                    const reviewList = document.getElementById('review-list');
+                    const reviewItem = document.createElement('div');
+                    reviewItem.className = 'review-item';
+                    reviewItem.textContent = reviewText;
+        
+                    reviewList.appendChild(reviewItem);
+                    reviewInput.value = ''; // Clear the input
+                } else {
+                    alert('Silakan tulis ulasan Anda sebelum mengirim.');
+                }
+            }
+        </script>
+
+        <div class="feature-section">
+            <h2>Booking Online Basecamp</h2>
+            <button onclick="location.href='booking.html'">Booking Basecamp</button>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2024 Jalur Pendakian Jawa Tengah</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Inisialisasi peta
+        const map = L.map('map').setView([-7.001, 110.438], 8);
+
+        // Menambahkan lapisan peta
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Menambahkan marker untuk basecamp
+        const basecamps = [
+    { name: 'Gunung Merbabu Via Selo', lat: -7.445, lng: 110.428, difficulty: 'Sedang', website: 'https://booking.tngunungmerbabu.org/app/' },
+    { name: 'Gunung Sumbing Via Butuh', lat: -7.314, lng: 110.051, difficulty: 'Sulit', website: 'https://www.instagram.com/reg.sumbing3371.id/' },
+    { name: 'Gunung Sindoro Via Lengkong', lat: -7.298, lng: 109.991, difficulty: 'Sedang', website: 'https://www.instagram.com/grasindo_sindoro_/' },
+    { name: 'Gunung Prau Via Patak Banteng', lat: -7.200, lng: 109.947, difficulty: 'Mudah', website: 'https://www.instagram.com/basecampprau_patakbanteng/' },
+    { name: 'Gunung Slamet Via Bambangan', lat: -7.3131, lng: 109.2274, difficulty: 'Sulit', website: 'https://www.instagram.com/slametviabambangan/' },
+    { name: 'Gunung Lawu Via Cetho', lat: -7.627, lng: 111.185, difficulty: 'Sulit', website: 'https://www.instagram.com/basecamp_lawu/' },
+    { name: 'Gunung Kembang Via Lengkong', lat: -7.325, lng: 109.976, difficulty: 'Sedang', website: 'https://www.instagram.com/gunungkembangvialengkong/' },
+];
+
+
+        basecamps.forEach(basecamp => {
+            L.marker([basecamp.lat, basecamp.lng])
+                .addTo(map)
+                .bindPopup(`
+                    <strong>${basecamp.name}</strong><br>
+                    Kesulitan Jalur: ${basecamp.difficulty}<br>
+                    <a href="${basecamp.website}" target="_blank">Website Basecamp</a>
+                `);
+        });
+
+        // API Key untuk OpenWeather
+        const apiKey = 'deb9ee10ec5548405591e3bf03264e8b';
+
+        // Fungsi untuk memperbarui informasi cuaca
+        function updateWeather() {
+            const city = document.getElementById('city-select').value;
+            fetchWeather(city);
+        }
+
+        // Fungsi untuk mengambil informasi cuaca
+        function fetchWeather(city) {
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Kota tidak ditemukan');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const weatherInfo = `
+                        <p>Kota: ${data.name}</p>
+                        <p>Suhu: ${data.main.temp}°C</p>
+                        <p>Kondisi: ${data.weather[0].description}</p>
+                    `;
+                    document.getElementById('weather-output').innerHTML = weatherInfo;
+                })
+                .catch(error => {
+                    document.getElementById('weather-output').innerHTML = `<p style="color: red;">${error.message}</p>`;
+                });
+        }
+
+    
+    </script>
+</body>
+
+</html>

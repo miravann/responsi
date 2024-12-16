@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Basecamp</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('images/bgbooking2.jpeg');
+            background-size: cover;
+            color: #fff;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            color: #FFCC00; /* Soft yellow */
+        }
+
+        .form-container {
+            text-align: center; /* Center the contents */
+        }
+
+        .booking-form {
+            background: rgba(255, 165, 0, 0.9); /* Soft orange */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            max-width: 90%;
+            width: 400px;
+            transition: transform 0.3s;
+            margin: 0 auto; /* Center the form */
+        }
+
+        .booking-form:hover {
+            transform: scale(1.02);
+        }
+
+        .booking-form input, .booking-form select {
+            width: calc(100% - 20px);
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #FFCC00; /* Soft yellow */
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .booking-form input:focus, 
+        .booking-form select:focus {
+            border-color: #FF5733; /* Vibrant orange-red */
+            outline: none;
+        }
+
+        .booking-form select {
+            background-color: #fff;
+            color: #333; /* Dark text for contrast */
+        }
+
+        .booking-form button {
+            background-color: #FF5733; /* Vibrant orange-red */
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            width: calc(100% - 20px); /* Match width with input fields */
+            padding: 12px; /* Adjust padding */
+        }
+
+        .booking-form button:hover {
+            background-color: #C70039; /* Darker red on hover */
+            transform: scale(1.05);
+        }
+
+        .secondary-button {
+            background-color: #FFC300; /* Light yellow */
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-top: 20px; /* Add space above */
+            margin-bottom: 20px; /* Space below the button */
+            padding: 8px; /* Smaller padding for a smaller button */
+            border-radius: 5px;
+            width: calc(100% - 20px); /* Match width with input fields */
+            max-width: 400px; /* Limit width to match the form */
+        }
+
+        .secondary-button:hover {
+            background-color: #FF5733; /* Change to vibrant orange-red on hover */
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 600px) {
+            .booking-form {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Formulir Reservasi Basecamp</h1>
+        <form class="booking-form" action="/responsi/input.php" method="post" onsubmit="return submitBooking()">
+            <input type="text" id="name" name="name" placeholder="Nama" required>
+            <input type="number" id="age" name="age" placeholder="Umur" required>
+            <input type="text" id="origin" name="origin" placeholder="Asal" required>
+            <select id="mountain" name="mountain" onchange="updateBasecampDropdown()" required>
+                <option value="">Pilih Gunung</option>
+                <option value="Gunung Merbabu">Gunung Merbabu</option>
+                <option value="Gunung Prau">Gunung Prau</option>
+                <option value="Gunung Sumbing">Gunung Sumbing</option>
+                <option value="Gunung Slamet">Gunung Slamet</option>
+                <option value="Gunung Sindoro">Gunung Sindoro</option>
+                <option value="Gunung Lawu">Gunung Lawu</option>
+            </select>
+            <select id="basecamp" name="basecamp" required>
+                <option value="">Pilih Basecamp</option>
+            </select>
+            <input type="number" id="groupSize" name="groupSize" placeholder="Jumlah Rombongan" required>
+            <input type="text" id="leader" name="leader" placeholder="Leader Rombongan" required>
+            <button type="submit">Kirim Reservasi</button>
+        </form>
+        <button class="secondary-button" onclick="viewRegistrants()">Lihat Pendaftar</button>
+    </div>
+
+    <script>
+        const basecamps = {
+            "Gunung Merbabu": [
+                "Basecamp Selo",
+                "Basecamp Suwanting",
+                "Basecamp Thekelan",
+                "Basecamp Wekas"
+            ],
+            "Gunung Prau": [
+                "Basecamp Patak Banteng",
+                "Basecamp Kali Lembu",
+                "Basecamp Dieng Wetan",
+                "Basecamp Wates"
+            ],
+            "Gunung Sumbing": [
+                "Basecamp Garung",
+                "Basecamp Cepit",
+                "Basecamp Bowongso"
+            ],
+            "Gunung Slamet": [
+                "Basecamp Bambangan",
+                "Basecamp Guci",
+                "Basecamp Baturaden"
+            ],
+            "Gunung Sindoro": [
+                "Basecamp Kledung",
+                "Basecamp Tambi"
+            ],
+            "Gunung Lawu": [
+                "Basecamp Cemoro Sewu",
+                "Basecamp Cemoro Kandang",
+                "Basecamp Cetho"
+            ]
+        };
+
+        function updateBasecampDropdown() {
+            const mountain = document.getElementById('mountain').value;
+            const basecampDropdown = document.getElementById('basecamp');
+            basecampDropdown.innerHTML = '<option value="">Pilih Basecamp</option>'; // Reset dropdown
+
+            if (mountain && basecamps[mountain]) {
+                basecamps[mountain].forEach(basecamp => {
+                    const option = document.createElement('option');
+                    option.value = basecamp;
+                    option.textContent = basecamp;
+                    basecampDropdown.appendChild(option);
+                });
+            }
+        }
+
+        function submitBooking() {
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const origin = document.getElementById('origin').value;
+            const mountain = document.getElementById('mountain').value;
+            const basecamp = document.getElementById('basecamp').value;
+            const groupSize = document.getElementById('groupSize').value;
+            const leader = document.getElementById('leader').value;
+
+            if (name && age && origin && mountain && basecamp && groupSize && leader) {
+                return true; // Allow form submission
+            } else {
+                alert('Harap lengkapi semua field!');
+                return false; // Prevent form submission
+            }
+        }
+
+        function viewRegistrants() {
+            window.location.href = '/responsi/index_booking.php';
+        }
+    </script>
+</body>
+</html>

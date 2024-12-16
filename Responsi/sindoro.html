@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <title>Panduan Pendakian Gunung Sindoro</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('images/sindorobg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+
+        header {
+            background-color: #6c98b6;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            border-bottom: 2px solid #ccc;
+            position: relative;
+            z-index: 1000;
+            margin-bottom: 10px;
+        }
+
+        nav {
+            background-color: #4d7084;
+            padding: 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+            color: #e0f7fa;
+            transform: scale(1.1);
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-box {
+            background-color: #e6f2f7;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s, transform 0.3s;
+            text-align: justify;
+        }
+
+        .info-box:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .info-box h2,
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #555;
+            text-align: justify;
+        }
+
+        #map-container {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #map {
+            width: 100%;
+            height: 60vh;
+        }
+
+        #legend {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            max-width: 220px;
+            z-index: 1000;
+        }
+
+        #legend h4 {
+            margin: 0 0 10px 0;
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .legend-item {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-title {
+            margin-left: 5px;
+            color: #333;
+        }
+
+        .legend-item img {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 600px) {
+            #map {
+                height: 40vh;
+            }
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+            #content {
+                padding: 10px;
+            }
+            .info-box {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🗻 Panduan Pendakian Gunung Sindoro ✨</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="#content">Informasi</a>
+        <a href="#map-container">Peta</a>
+        <a href="#htm">HTM</a>
+        <a href="#ekowisata">Ekowisata</a>
+        <a href="booking.html">Booking</a>
+    </nav>
+
+    <div id="content">
+        <div class="info-box">
+            <h2>Informasi Pendakian</h2>
+            <p><strong>Gunung Sindoro</strong>, dengan ketinggian 3.153 meter di atas permukaan laut, merupakan gunung stratovolcano aktif yang terletak di Jawa Tengah. Gunung ini berdampingan dengan Gunung Sumbing, membentuk panorama alam yang menakjubkan dan sering disebut sebagai "gunung kembar". Sindoro memiliki bentuk kerucut yang khas dan menjadi salah satu tujuan favorit bagi para pendaki karena menawarkan pemandangan alam yang indah, termasuk kawah aktif di puncaknya. Selain itu, jalur pendakian yang menantang dan hamparan perkebunan teh di sekitarnya menambah daya tarik gunung ini.</p>
+        </div>
+
+        <div class="info-box">
+            <h2>Basecamp Pendakian Gunung Sindoro</h2>
+            <h3>1. Basecamp Kledung:</h3>
+            <p>Terletak di Desa Kledung, Kecamatan Kledung, Kabupaten Temanggung, basecamp ini merupakan jalur pendakian paling populer menuju puncak Sindoro. Fasilitas yang tersedia meliputi area parkir, warung makan, dan tempat istirahat. Dari basecamp ini, pendaki akan melewati perkebunan tembakau dan hutan pinus sebelum mencapai puncak.</p>
+
+            <h3>2. Basecamp Sigedang:</h3>
+            <p>Berada di Desa Sigedang, jalur ini menawarkan pemandangan alam yang asri dengan melewati perkebunan teh. Meskipun kurang populer dibandingkan Kledung, jalur ini memberikan pengalaman pendakian yang berbeda dengan suasana yang lebih tenang.</p>
+
+            <h3>3. Basecamp Ndoroarum:</h3>
+            <p>Jalur pendakian via Ndoroarum menawarkan rute yang menantang dengan pemandangan alam yang indah. Di puncak jalur ini, terdapat makam KH Santri yang menjadi salah satu daya tarik bagi pendaki.</p>
+        </div>
+
+        <div class="info-box">
+            <h2>Harga Tiket Masuk (HTM)</h2>
+            <p>Biaya pendaftaran pendakian di Basecamp Kledung sekitar Rp15.000 per orang. Selain itu, tersedia layanan ojek menuju Pos 1 dengan tarif antara Rp20.000 hingga Rp25.000 per orang.</p>
+        </div>
+
+        <div class="info-box">
+            <h2>Ekowisata di Sekitar Gunung Sindoro</h2>
+            <h3>1. Embung Kledung:</h3>
+            <p>Embung Kledung merupakan danau buatan yang menawarkan pemandangan indah dengan latar belakang Gunung Sindoro dan Sumbing. Tempat ini cocok untuk bersantai sambil menikmati keindahan alam. Harga tiket masuknya sekitar Rp7.000 per orang.</p>
+
+            <h3>2. Wisata Alam Posong:</h3>
+            <p>Terletak di Temanggung, Posong menawarkan panorama alam yang menakjubkan, terutama saat matahari terbit. Pengunjung dapat menikmati pemandangan Gunung Sindoro dan Sumbing dari ketinggian. Harga tiket masuk berkisar antara Rp20.000 hingga Rp30.000, tergantung hari kunjungan.</p>
+
+            <h3>3. Sigandul View:</h3>
+            <p>Destinasi wisata ini menawarkan pemandangan alam yang indah dengan fasilitas seperti jembatan kaca dan spot foto menarik. Harga tiket masuknya Rp15.000 per orang.</p>
+        </div>
+
+        <div class="info-box">
+            <h3>Jalur pendakian gunung sindoro via kledung</h3>
+            <p>Berikut merupakan jalur pendakian gunung sindoro via kledung.</p>
+        </div>
+
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="legend">
+                <h4>Legenda</h4>
+                <div class="legend-item">
+                    <img src="http://localhost:8080/geoserver/pg_web10/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=pg_web10:sindoro_line&format=image/png" alt="Sindoro Line">
+                    <span class="legend-title">Jalur Pendakian Sindoro</span>
+                </div>
+                <div class="legend-item">
+                    <img src="http://localhost:8080/geoserver/pg_web10/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=pg_web10:prau_desa&format=image/png" alt="Prau Desa">
+                    <span class="legend-title">Wilayah Prau Desa</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map("map").setView([-7.2982, 109.9917], 13);
+        var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+        osm.addTo(map);
+        var sindoroLineLayer = L.tileLayer.wms("http://localhost:8080/geoserver/pg_web10/wms", {
+            layers: "pg_web10:sindoro_line",
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            attribution: "Data from GeoServer",
+        });
+        sindoroLineLayer.addTo(map);
+        var prauDesaLayer = L.tileLayer.wms("http://localhost:8080/geoserver/pg_web10/wms", {
+            layers: "pg_web10:prau_desa",
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            attribution: "Data from GeoServer",
+        });
+        prauDesaLayer.addTo(map);
+        var baseMaps = {
+            "OpenStreetMap": osm
+        };
+        var overlayMaps = {
+            "Wilayah Prau Desa": prauDesaLayer,
+            "Jalur Pendakian Sindoro": sindoroLineLayer
+        };
+        var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+        function updateLegendVisibility() {
+            var legendItems = document.querySelectorAll('.legend-item');
+            legendItems.forEach(function (item) {
+                var layerName = item.querySelector('.legend-title').textContent;
+                var visible = false;
+
+                if (layerName === "Jalur Pendakian Sindoro" && map.hasLayer(sindoroLineLayer)) visible = true;
+                if (layerName === "Wilayah Prau Desa" && map.hasLayer(prauDesaLayer)) visible = true;
+
+                item.style.display = visible ? 'flex' : 'none';
+            });
+        }
+
+        map.on('overlayadd', updateLegendVisibility);
+        map.on('overlayremove', updateLegendVisibility);
+        updateLegendVisibility();
+    </script>
+</body>
+
+</html>

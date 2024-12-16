@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <title>Panduan Pendakian Gunung Sumbing</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('images/gunung sumbing.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+
+        header {
+            background-color: #6c98b6;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            border-bottom: 2px solid #ccc;
+            position: relative;
+            z-index: 1000;
+            margin-bottom: 10px;
+        }
+
+        nav {
+            background-color: #4d7084;
+            padding: 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+            color: #e0f7fa;
+            transform: scale(1.1);
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-box {
+            background-color: #e6f2f7;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s, transform 0.3s;
+            text-align: justify;
+        }
+
+        .info-box:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .info-box h2,
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #555;
+            text-align: justify;
+        }
+
+        #map-container {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #map {
+            width: 100%;
+            height: 60vh;
+        }
+
+        #legend {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            max-width: 220px;
+            z-index: 1000;
+        }
+
+        #legend h4 {
+            margin: 0 0 10px 0;
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .legend-item {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-title {
+            margin-left: 5px;
+            color: #333;
+        }
+
+        .legend-item img {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .htm-container,
+        .ekowisata-container {
+            background-color: #e6f2f7;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: justify;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .htm-container:hover,
+        .ekowisata-container:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 600px) {
+            #map {
+                height: 40vh;
+            }
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+            #content {
+                padding: 10px;
+            }
+            .info-box {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🗻 Panduan Pendakian Gunung Sumbing ✨</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="#content">Informasi</a>
+        <a href="#map-container">Peta</a>
+        <a href="#htm-container">HTM</a>
+        <a href="#ekowisata-container">Ekowisata</a>
+        <a href="booking.html">Booking</a>
+    </nav>
+
+    <div id="content">
+        <div class="info-box">
+            <h2>Informasi Pendakian Gunung Sumbing</h2>
+            <p>Gunung Sumbing, salah satu gunung tertinggi di Pulau Jawa dengan ketinggian sekitar 3.371 meter di atas permukaan laut, adalah bagian dari pegunungan vulkanik di Jawa Tengah. Gunung ini menjadi destinasi favorit bagi para pendaki karena menawarkan keindahan alam yang memukau, mulai dari padang edelweis, hutan tropis, hingga panorama kawah aktif di puncaknya. Lokasinya yang strategis di antara Kabupaten Magelang, Temanggung, dan Wonosobo membuat Gunung Sumbing mudah diakses dari berbagai titik. Dengan jalur pendakian yang bervariasi, gunung ini cocok untuk pendaki pemula hingga berpengalaman. Selain itu, keberadaan dusun-dusun unik seperti Dusun Butuh yang dikenal sebagai "Nepal van Java" menambah daya tarik wisata di sekitar Gunung Sumbing.</p>
+        </div>
+
+        <div class="info-box">
+            <h2>Basecamp Pendakian</h2>
+            <div class="info-box">
+                <h3>Basecamp Garung</h3>
+                <p>Basecamp Garung, yang terletak di Kabupaten Wonosobo, merupakan salah satu titik pendakian paling populer menuju Gunung Sumbing. Berada di ketinggian sekitar 1.200 meter di atas permukaan laut, basecamp ini menawarkan fasilitas yang cukup lengkap, seperti tempat parkir, warung makan, dan area istirahat bagi pendaki. Jalur Garung dikenal dengan tantangan medannya yang cukup curam namun menawarkan pemandangan yang spektakuler, termasuk hamparan ladang pertanian yang hijau dan panorama Gunung Sindoro yang berdiri megah di kejauhan. Jalur ini sering menjadi pilihan utama bagi pendaki yang ingin merasakan pengalaman mendaki yang lebih intens.</p>
+            </div>
+            <div class="info-box">
+                <h3>Basecamp Kaliangkrik</h3>
+                <p>Basecamp Kaliangkrik berada di Dusun Butuh, Kecamatan Kaliangkrik, Kabupaten Magelang. Basecamp ini terkenal dengan keunikannya karena terletak di dusun yang dijuluki "Nepal van Java," di mana rumah-rumah penduduk tersusun rapat di lereng bukit, menciptakan pemandangan yang menyerupai desa pegunungan di Nepal. Jalur pendakian dari basecamp ini cenderung lebih landai di awal, melewati perkebunan dan ladang milik warga, sebelum memasuki zona hutan. Basecamp Kaliangkrik menyediakan fasilitas seperti penginapan sederhana, warung, dan pemandu lokal yang siap membantu pendaki. Keindahan lanskap di sekitar basecamp membuat tempat ini juga menjadi tujuan wisata selain untuk pendakian.</p>
+            </div>
+            <div class="info-box">
+                <h3>Basecamp Sigedong</h3>
+                <p>Basecamp Sigedong terletak di Desa Sigedong, Kecamatan Kertek, Kabupaten Wonosobo, dan merupakan salah satu jalur pendakian alternatif ke Gunung Sumbing. Jalur ini dikenal dengan suasana yang lebih sepi dibandingkan jalur lainnya, cocok bagi pendaki yang ingin menikmati ketenangan dan kedekatan dengan alam. Pendakian dari basecamp Sigedong dimulai dengan melintasi area perkampungan dan ladang-ladang warga, kemudian masuk ke zona hutan yang rimbun. Basecamp ini dilengkapi fasilitas dasar seperti tempat parkir, toilet, dan area berkemah. Jalur Sigedong menawarkan pemandangan alam yang indah, termasuk sunrise yang spektakuler dari lereng gunung.</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>Jalur Pendakian Gunung Sumbing via Kaliangkrik</h3>
+            <p>Jalur pendakian dari Basecamp Kaliangkrik menawarkan pengalaman yang menarik bagi para pendaki. Dimulai dengan pemandangan ladang-ladang warga, jalur ini kemudian memasuki hutan yang lebat sebelum mencapai puncak. Pendaki dapat menikmati keindahan alam yang memukau di sepanjang perjalanan, menjadikannya pilihan yang tepat bagi mereka yang mencari pengalaman mendaki yang menyenangkan.</p>
+        </div>
+
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="legend">
+                <h4>Legenda</h4>
+                <div class="legend-item">
+                    <img src="http://localhost:8080/geoserver/pg_web10/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=pg_web10:sumbing_line&format=image/png"
+                         alt="Line Sumbing">
+                    <span class="legend-title">Jalur Pendakian Sumbing</span>
+                </div>
+                <div class="legend-item">
+                    <img src="http://localhost:8080/geoserver/pg_web10/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=pg_web10:magelang&format=image/png"
+                         alt="Magelang">
+                    <span class="legend-title">Wilayah Magelang</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="htm-container" class="htm-container">
+            <h2>HTM (Harga Tiket Masuk)</h2>
+            <p>Harga tiket masuk untuk pendakian Gunung Sumbing adalah <strong>Rp25.000</strong> per orang.</p>
+            <p>Tarif parkir kendaraan di basecamp:</p>
+            <ul>
+                <li>Sepeda motor: <strong>Rp10.000</strong></li>
+                <li>Mobil: <strong>Rp20.000</strong></li>
+            </ul>
+        </div>
+
+        <div id="ekowisata-container" class="ekowisata-container">
+            <h2>Ekowisata</h2>
+            <p>Di sekitar Gunung Sumbing, terdapat beberapa ekowisata menarik yang dapat Anda kunjungi:</p>
+            <ul>
+                <li><strong>Dusun Butuh (Nepal van Java)</strong>: Terletak di lereng Gunung Sumbing, dusun ini menawarkan pemandangan rumah-rumah yang tersusun rapi di lereng, mirip dengan lanskap di Nepal.</li>
+                <li><strong>Mangli Sky View</strong>: Menyediakan panorama alam yang indah dengan latar belakang Gunung Sumbing dan Sindoro, cocok untuk menikmati matahari terbit dan terbenam.</li>
+                <li><strong>Wana Mukti Si Guege</strong>: Destinasi wisata alam yang menawarkan suasana hutan pinus yang asri, cocok untuk rekreasi keluarga dan kegiatan outbound.</li>
+                <li><strong>Embung Kledung</strong>: Sebuah waduk buatan yang menawarkan pemandangan indah dengan latar belakang Gunung Sumbing dan Sindoro, ideal untuk bersantai dan berfoto.</li>
+                <li><strong>Edu-Ekowisata Agroforestri Sedadap</strong>: Wisata edukatif yang menggabungkan pertanian dan kehutanan, memberikan pengalaman belajar tentang konservasi alam dan pertanian berkelanjutan.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+        var map = L.map("map").setView([-7.385, 110.0725], 13);
+        var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+        osm.addTo(map);
+
+        var lineSumbingLayer = L.tileLayer.wms("http://localhost:8080/geoserver/pg_web10/wms", {
+            layers: "pg_web10:sumbing_line",
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            attribution: "Data from GeoServer",
+        });
+        lineSumbingLayer.addTo(map);
+
+        var magelangLayer = L.tileLayer.wms("http://localhost:8080/geoserver/pg_web10/wms", {
+            layers: "pg_web10:magelang",
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            attribution: "Data from GeoServer",
+        });
+        magelangLayer.addTo(map);
+
+        var baseMaps = {
+            "OpenStreetMap": osm
+        };
+
+        var overlayMaps = {
+            "Wilayah Magelang": magelangLayer,
+            "Jalur Pendakian Sumbing": lineSumbingLayer
+        };
+
+        var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+        function updateLegendVisibility() {
+            var legendItems = document.querySelectorAll('.legend-item');
+            legendItems.forEach(function (item) {
+                var layerName = item.querySelector('.legend-title').textContent;
+                var visible = false;
+
+                if (layerName === "Jalur Pendakian Sumbing" && map.hasLayer(lineSumbingLayer)) visible = true;
+                if (layerName === "Wilayah Magelang" && map.hasLayer(magelangLayer)) visible = true;
+
+                item.style.display = visible ? 'flex' : 'none';
+            });
+        }
+
+        map.on('overlayadd', updateLegendVisibility);
+        map.on('overlayremove', updateLegendVisibility);
+        updateLegendVisibility();
+    </script>
+</body>
+</html>

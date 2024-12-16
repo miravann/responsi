@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <title>Panduan Pendakian Gunung Slamet</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('images/slametbg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+
+        header {
+            background-color: #6c98b6;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            border-bottom: 2px solid #ccc;
+            position: relative;
+            z-index: 1000;
+            margin-bottom: 10px;
+        }
+
+        nav {
+            background-color: #4d7084;
+            padding: 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+            color: #e0f7fa;
+            transform: scale(1.1);
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-box {
+            background-color: #e6f2f7;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s, transform 0.3s;
+            text-align: justify;
+        }
+
+        .info-box:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .info-box h2,
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #555;
+            text-align: justify;
+        }
+
+        #map-container {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #map {
+            width: 100%;
+            height: 60vh;
+        }
+
+        #legend {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            max-width: 220px;
+            z-index: 1000;
+        }
+
+        #legend h4 {
+            margin: 0 0 10px 0;
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .legend-item {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-title {
+            margin-left: 5px;
+            color: #333;
+        }
+
+        .legend-item img {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .htm-container,
+        .ekowisata-container {
+            background-color: #e6f2f7;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: justify;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .htm-container:hover,
+        .ekowisata-container:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 600px) {
+            #map {
+                height: 40vh;
+            }
+
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+
+            #content {
+                padding: 10px;
+            }
+
+            .info-box {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🗻 Panduan Pendakian Gunung Slamet ✨</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="#content">Informasi</a>
+        <a href="#map-container">Peta</a>
+        <a href="#htm">HTM</a>
+        <a href="#ekowisata">Ekowisata</a>
+        <a href="booking.html">Booking</a>
+    </nav>
+
+    <div id="content">
+        <div class="info-box">
+            <h2>Informasi Pendakian</h2>
+            <p><strong>Gunung Slamet</strong> adalah gunung berapi kerucut tipe A yang terletak di Jawa Tengah, Indonesia, dengan ketinggian 3.432 meter di atas permukaan laut, menjadikannya gunung tertinggi di Jawa Tengah dan kedua tertinggi di Pulau Jawa. Gunung ini berada di antara lima kabupaten: Banyumas, Purbalingga, Pemalang, Tegal, dan Brebes. Sebagai gunung berapi aktif, Slamet telah mengalami beberapa erupsi sejak abad ke-19, dengan aktivitas terakhir yang signifikan terjadi pada 2009. Kawasan ini memiliki suhu yang dingin dan luas vegetasi sekitar 312 kilometer persegi. Di kaki Gunung Slamet terdapat objek wisata populer seperti Baturraden dan pemandian air panas Guci, menjadikannya destinasi menarik bagi para pendaki dan pecinta alam.</p>
+        </div>
+
+        <div class="info-box">
+            <h2>Basecamp Pendakian</h2>
+            <div class="info-box">
+                <h3>Basecamp Bambangan</h3>
+                <p>Basecamp Bambangan adalah salah satu pintu masuk resmi untuk pendakian Gunung Slamet.</p>
+            </div>
+            <div class="info-box">
+                <h3>Basecamp Permadi Guci</h3>
+                <p>Terletak di Desa Guci, Kecamatan Bumijawa, basecamp ini merupakan titik awal pendakian yang populer. Pendaki diharuskan melakukan registrasi sebelum memulai perjalanan. Fasilitas yang tersedia termasuk homestay dan akses ke jalur pendakian yang indah, melewati air terjun dan hutan yang asri.</p>
+            </div>
+            <div class="info-box">
+                <h3>Basecamp Dipajaya</h3>
+                <p>Berlokasi di Clekatakan, Pulosari, basecamp ini menawarkan jalur pendakian yang lebih cepat namun menantang. Pendaki dapat menemukan sumber air di beberapa pos dan menikmati panorama indah sepanjang perjalanan.</p>
+            </div>
+            <div class="info-box">
+                <h3>Basecamp Kaliwadas</h3>
+                <p>Jalur pendakian Kaliwadas sama rutenya dengan jalur via Sawangan. Bedanya, Sawangan ada sekitar 400 meter setelah basecamp Kaliwadas. Kaliwadas berada di kaki Gunung Slamet bagian barat daya. Jalur ini memang tidak seramai jalur via Bambangan, tetapi cukup diminati karena tidak terlalu ekstrim.</p>
+            </div>
+        </div>
+
+        <div id="htm"></div>
+        <div class="info-box">
+            <h2>Harga Tiket Masuk (HTM)</h2>
+            <p>Harga tiket masuk untuk mendaki Gunung Slamet adalah Rp 25.000 per orang. Biaya ini mencakup registrasi yang diperlukan untuk mendapatkan izin pendakian, berkemah, dan memasuki kawasan tersebut. Gunung Slamet memiliki beberapa jalur pendakian, termasuk jalur Bambangan, Guci, Baturaden, dan Dipajaya, dengan akses yang terbuka 24 jam.</p>
+        </div>
+
+        <div id="ekowisata"></div>
+        <div class="info-box">
+            <h2>Ekowisata di Sekitar Gunung Slamet</h2>
+            <h3>1. Kawasan Wisata Baturraden:</h3>
+            <p>Terletak di kaki Gunung Slamet, kawasan wisata Baturraden menjadi tujuan popular di Kabupaten Banyumas, dengan jarak sekitar 15 km dari Kota Purwokerto.</p>
+            <h3>2. Pemandian Air Panas Guci:</h3>
+            <p>Berada di sisi utara Gunung Slamet, pemandian air panas Guci menawarkan kegiatan rekreasi alam yang menarik bagi pengunjung.</p>
+        </div>
+
+        <div class="info-box">
+            <h3>Jalur Pendakian Gunung Slamet via Bambangan</h3>
+            <p>Berikut adalah jalur pendakian di Gunung Slamet via Bambangan.</p>
+        </div>
+
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="legend">
+                <h4>Legenda</h4>
+                <div class="legend-item">
+                    <img src="http://localhost:8080/geoserver/pg_web10/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=pg_web10:slamet_line&format=image/png" alt="Slamet Line">
+                    <span class="legend-title">Jalur Pendakian Slamet</span>
+                </div>
+                <div class="legend-item">
+                    <img src="http://localhost:8080/geoserver/pg_web10/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=pg_web10:purbalingga&format=image/png" alt="Purbalingga">
+                    <span class="legend-title">Wilayah Purbalingga</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map("map").setView([-7.2333, 109.2900], 13);
+        var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+        osm.addTo(map);
+        var slametLineLayer = L.tileLayer.wms("http://localhost:8080/geoserver/pg_web10/wms", {
+            layers: "pg_web10:slamet_line",
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            attribution: "Data from GeoServer",
+        });
+        slametLineLayer.addTo(map);
+        var purbalinggaLayer = L.tileLayer.wms("http://localhost:8080/geoserver/pg_web10/wms", {
+            layers: "pg_web10:purbalingga",
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            attribution: "Data from GeoServer",
+        });
+        purbalinggaLayer.addTo(map);
+        var baseMaps = {
+            "OpenStreetMap": osm
+        };
+        var overlayMaps = {
+            "Wilayah Purbalingga": purbalinggaLayer,
+            "Jalur Pendakian Slamet": slametLineLayer
+        };
+        var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+        function updateLegendVisibility() {
+            var legendItems = document.querySelectorAll('.legend-item');
+            legendItems.forEach(function (item) {
+                var layerName = item.querySelector('.legend-title').textContent;
+                var visible = false;
+
+                if (layerName === "Jalur Pendakian Slamet" && map.hasLayer(slametLineLayer)) visible = true;
+                if (layerName === "Wilayah Purbalingga" && map.hasLayer(purbalinggaLayer)) visible = true;
+
+                item.style.display = visible ? 'flex' : 'none';
+            });
+        }
+        map.on('overlayadd', updateLegendVisibility);
+        map.on('overlayremove', updateLegendVisibility);
+        updateLegendVisibility();
+    </script>
+</body>
+
+</html>

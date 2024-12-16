@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <title>Panduan Pendakian Gunung Lawu</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('images/bglawu.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+
+        header {
+            background-color: #6c98b6;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            border-bottom: 2px solid #ccc;
+            position: relative;
+            z-index: 1000;
+            margin-bottom: 10px;
+        }
+
+        nav {
+            background-color: #4d7084;
+            padding: 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+            color: #e0f7fa;
+            transform: scale(1.1);
+        }
+
+        #content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-box {
+            background-color: #e6f2f7;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s, transform 0.3s;
+            text-align: justify;
+        }
+
+        .info-box:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .info-box h2,
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #555;
+            text-align: justify;
+        }
+
+        #map-container {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #map {
+            width: 100%;
+            height: 60vh;
+        }
+
+        #legend {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            max-width: 220px;
+            z-index: 1000;
+        }
+
+        #legend h4 {
+            margin: 0 0 10px 0;
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .legend-item {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-title {
+            margin-left: 5px;
+            color: #333;
+        }
+
+        .legend-item img {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 600px) {
+            #map {
+                height: 40vh;
+            }
+
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+
+            #content {
+                padding: 10px;
+            }
+
+            .info-box {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🗻 Panduan Pendakian Gunung Lawu ✨</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="#content">Informasi</a>
+        <a href="#map-container">Peta</a>
+        <a href="#htm">HTM</a>
+        <a href="#ekowisata">Ekowisata</a>
+        <a href="booking.html">Booking</a>
+    </nav>
+
+    <div id="content">
+        <div class="info-box">
+            <h2>Informasi Pendakian</h2>
+            <p><strong>Gunung Lawu</strong> adalah gunung berapi tidak aktif yang terletak di perbatasan Jawa Tengah dan Jawa Timur, Indonesia. Dengan ketinggian sekitar 3.265 meter di atas permukaan laut, Gunung Lawu dikenal sebagai salah satu tujuan pendakian favorit di Jawa. Gunung ini memiliki tiga puncak utama, yaitu Hargo Dumilah, Hargo Dalem, dan Hargo Dumiling, serta sejumlah situs spiritual seperti Pasar Dieng dan Sendang Drajat yang sering dikunjungi peziarah. Selain keindahan alamnya yang menakjubkan, Gunung Lawu juga kaya akan nilai budaya dan sejarah, termasuk tradisi lokal seperti upacara Grebeg Suro yang kerap diadakan di lerengnya.</p>
+        </div>
+
+        <div class="info-box">
+            <h2>Informasi Basecamp</h2>
+            <div class="info-box">
+                <h3>Basecamp Cemoro Sewu</h3>
+                <p>Basecamp Cemoro Sewu terletak di Kabupaten Magetan, Jawa Timur, dan merupakan salah satu pintu pendakian resmi menuju Gunung Lawu.</p>
+            </div>
+            <div class="info-box">
+                <h3>Basecamp Cemoro Kandang</h3>
+                <p>Basecamp Cemoro Kandang berlokasi di Tawangmangu, Kabupaten Karanganyar, Jawa Tengah.</p>
+            </div>
+            <div class="info-box">
+                <h3>Basecamp Cetho</h3>
+                <p>Basecamp Candi Cetho terletak di kawasan Candi Cetho, Kabupaten Karanganyar, Jawa Tengah.</p>
+            </div>
+        </div>
+
+        <div id="htm"></div>
+        <div class="info-box">
+            <h2>Harga Tiket Masuk (HTM)</h2>
+            <h3>Biaya Registrasi Pendakian: </h3>
+            <p>Jalur Cemoro Sewu atau Cemoro Kandang: Rp15.000 – Rp20.000 per orang.</p>
+            <p> Jalur Candi Cetho: Rp20.000 – Rp25.000 per orang.</p>
+            <h3> Parkir Kendaraan:</h3>
+            <p> Motor: Rp5.000 – Rp10.000.</p>
+            <p> Mobil: Rp10.000 – Rp20.000.</p>
+        </div>
+
+        <div id="ekowisata"></div>
+        <div class="info-box">
+            <h2>Ekowisata di Sekitar Gunung Lawu</h2>
+            <h3>1. Candi Cetho</h3>
+            <p><strong>Lokasi:</strong> Karanganyar, Jawa Tengah.<br>
+            <strong>Deskripsi:</strong> Sebuah candi Hindu dari abad ke-15 yang terletak di lereng Gunung Lawu. Candi ini memiliki arsitektur khas dan pemandangan pegunungan yang menakjubkan.<br>
+            <strong>Aktivitas:</strong> Berfoto, belajar sejarah, dan menikmati suasana spiritual.</p>
+
+            <h3>2. Candi Sukuh</h3>
+            <p><strong>Lokasi:</strong> Karanganyar, Jawa Tengah.<br>
+            <strong>Deskripsi:</strong> Situs candi Hindu yang unik dengan relief erotis dan bentuk yang menyerupai piramida. Terletak tidak jauh dari Candi Cetho.<br>
+            <strong>Aktivitas:</strong> Eksplorasi budaya dan sejarah.</p>
+
+            <h3>3. Air Terjun Jumog</h3>
+            <p><strong>Lokasi:</strong> Ngargoyoso, Karanganyar.<br>
+            <strong>Deskripsi:</strong> Air terjun kecil yang indah dengan suasana asri. Dikenal sebagai "surga yang hilang" karena lokasinya yang tersembunyi.<br>
+            <strong>Aktivitas:</strong> Bermain air, trekking ringan, dan piknik.</p>
+
+            <h3>4. Telaga Sarangan</h3>
+            <p><strong>Lokasi:</strong> Magetan, Jawa Timur.<br>
+            <strong>Deskripsi:</strong> Danau alami di kaki Gunung Lawu dengan udara sejuk dan panorama pegunungan.<br>
+            <strong>Aktivitas:</strong> Naik perahu, berkuda di sekitar danau, atau menikmati kuliner khas seperti sate kelinci.</p>
+
+            <h3>5. Kebun Teh Kemuning</h3>
+            <p><strong>Lokasi:</strong> Ngargoyoso, Karanganyar.<br>
+            <strong>Deskripsi:</strong> Perkebunan teh hijau yang luas dengan suasana sejuk. Sering digunakan untuk aktivitas hiking dan outbound.<br>
+            <strong>Aktivitas:</strong> Berjalan-jalan di kebun teh, tea time di kafe lokal, dan belajar proses pengolahan teh.</p>
+        </div>
+
+        <div class="info-box">
+            <h3>Titik pos pendakian dan wilayah gunung lawu Via Cemoro Sewu</h3>
+        </div>
+
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="legend">
+                <h4>Legenda</h4>
+                <div class="legend-item">
+                    <img src="http://localhost:8080/geoserver/pg_web10/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=pg_web10:poslawu&format=image/png" alt="Pos Lawu">
+                    <span class="legend-title">Pos Lawu</span>
+                </div>
+                <div class="legend-item">
+                    <img src="http://localhost:8080/geoserver/pg_web10/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=pg_web10:magetan&format=image/png" alt="Magetan">
+                    <span class="legend-title">Desa Magetan</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map("map").setView([-7.6256, 111.1941], 13);
+        var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+        osm.addTo(map);
+        var magetanLayer = L.tileLayer.wms("http://localhost:8080/geoserver/pg_web10/wms", {
+            layers: "pg_web10:magetan",
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            attribution: "Data from GeoServer"
+        });
+        magetanLayer.addTo(map);
+        var posPendakianLayer = L.tileLayer.wms("http://localhost:8080/geoserver/pg_web10/wms", {
+            layers: "pg_web10:poslawu",
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0',
+            attribution: "Data from GeoServer"
+        });
+        posPendakianLayer.addTo(map);
+        var baseMaps = {
+            "OpenStreetMap": osm
+        };
+        var overlayMaps = {
+            "Magetan": magetanLayer,
+            "Pos Lawu": posPendakianLayer
+        };
+        var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+        function updateLegendVisibility() {
+            var legendItems = document.querySelectorAll('.legend-item');
+            legendItems.forEach(function (item) {
+                var layerName = item.querySelector('.legend-title').textContent;
+                var visible = false;
+                if (layerName === "Pos Lawu" && map.hasLayer(posPendakianLayer)) visible = true;
+                if (layerName === "Magetan" && map.hasLayer(magetanLayer)) visible = true;
+                item.style.display = visible ? 'flex' : 'none';
+            });
+        }
+        map.on('overlayadd', updateLegendVisibility);
+        map.on('overlayremove', updateLegendVisibility);
+        updateLegendVisibility();
+    </script>
+</body>
+
+</html>
